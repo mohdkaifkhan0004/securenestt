@@ -3,8 +3,7 @@ services:
     name: securenestt
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
-
+    buildCommand: pip install -r SecureNestt/requirements.txt
     pythonVersion: 3.10
     startCommand: "python SecureNestt/run.py"
     envVars:
