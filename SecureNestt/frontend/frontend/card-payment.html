@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureNestt Payment</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f2f2;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .payment-box {
+      background: white;
+      max-width: 500px;
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+    h2 {
+      text-align: center;
+      color: #222;
+    }
+    .payment-option {
+      margin: 15px 0;
+    }
+    .option-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .option-header input {
+      margin-right: 10px;
+    }
+    .option-content {
+      display: none;
+      padding-left: 25px;
+      font-size: 0.9rem;
+    }
+    .option-content input {
+      width: 90%;
+      padding: 8px;
+      margin: 6px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .refer {
+      margin-top: 20px;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background-color: #f0c040;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .btn:hover {
+      background-color: #e6b030;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 0.9rem;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="payment-box">
+            <div>Selected Plan: <span id="selectedPlanName"></span></div>
+        <div>Base Price: <span id="basePrice"></span></div>
+    <h2>Select Payment Method</h2>
+    
+    <div class="payment-option">
+      <div class="option-header">
+        <input type="radio" name="payment" onclick="showOption('upi')" checked>
+        <label>UPI (PhonePe / GPay / Paytm)</label>
+      </div>
+      <div class="option-content" id="upi">
+        <input type="text" placeholder="Enter your UPI ID (e.g. mobile@upi)">
+      </div>
+    </div>
+
+    <div class="payment-option">
+      <div class="option-header">
+        <input type="radio" name="payment" onclick="showOption('card')">
+        <label>Credit / Debit Card</label>
+      </div>
+      <div class="option-content" id="card">
+        <input type="text" placeholder="Card Number">
+        <input type="text" placeholder="Cardholder Name">
+        <input type="text" placeholder="MM/YY">
+        <input type="password" placeholder="CVV">
+      </div>
+    </div>
+
+    <div class="payment-option">
+      <div class="option-header">
+        <input type="radio" name="payment" onclick="showOption('banking')">
+        <label>Net Banking</label>
+      </div>
+      <div class="option-content" id="banking">
+        <input type="text" placeholder="Bank Name">
+        <input type="text" placeholder="Account Holder Name">
+      </div>
+    </div>
+
+    <div class="payment-option">
+      <div class="option-header">
+        <input type="radio" name="payment" onclick="showOption('cod')">
+        <label>Cash on Delivery (COD)</label>
+      </div>
+      <div class="option-content" id="cod">
+        <p>⚠️ ₹49 will be added for COD service.</p>
+      </div>
+    </div>
+
+    <div class="refer">
+      <label>Referral Code (Optional):</label>
+      <input type="text" placeholder="Enter referral code">
+    </div>
+<!-- Add this inside .payment-box, payment options ke baad -->
+<div class="price-summary" id="priceSummary" style="margin-top:25px; background:#f8f8f8; border-radius:8px; padding:18px;">
+  <h3 style="margin:0 0 10px 0; font-size:1.1rem; color:#222;">Price Details</h3>
+  <div>Base Price: <span id="basePrice">₹0</span></div>
+  <div>GST (18%): <span id="gstPrice">₹0</span></div>
+  <div>COD Charges: <span id="codPrice">₹0</span></div>
+  <div style="color:#27ae60;">Referral Discount: <span id="referDiscount">-₹0</span></div>
+  <hr>
+  <div style="font-weight:bold;font-size:1.1rem;">Total Payable: <span id="totalPrice">₹0</span></div>
+</div>
+  
+    <button class="btn" onclick="completePayment()">Proceed to Pay</button>
+        <button class="btn" id="confirmPaymentBtn" style="display:none;margin-top:10px;">I have completed payment</button>
+  </div>
+
+  <div class="footer">
+    Secure Payment powered by SecureNestt<br>
+    This is a demo page for preview only.
+  </div>
+
+    <script>
+
+            // Update on plan change
+           document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('selectedPlanName').textContent = getSelectedPlan();
+        document.getElementById('basePrice').textContent = "₹" + getBasePrice(getSelectedPlan());
+        updatePriceSummary();
+        // ...baaki code...
+      });
+            // Place this <script> block after your existing script
+
+      const PLAN_PRICES = {
+        "White Plan": 49,
+        "Black Plan": 99,
+        "Gold Plan": 199
+      };
+      
+             // Plan aur price ko localStorage se read karo
+          function getSelectedPlan() {
+            return localStorage.getItem("selectedPlan") || "Black Plan";
+          }
+       
+      function getBasePrice(plan) {
+        return PLAN_PRICES[plan] || 0;
+      }
+      
+      function getGST(price) {
+        return Math.round(price * 0.18);
+      }
+      
+      function getCODCharge() {
+        // If COD selected, else 0
+        const codRadio = document.querySelector('input[type=radio][onclick*="cod"]');
+        return codRadio && codRadio.checked ? 49 : 0;
+      }
+      // Referral codes and their discount percentages
+const REFER_CODES = {
+  "SECURE10": 10,
+  "SECURE40": 40,
+  "SECURE60": 60,
+  "SECURE80": 80,
+  "SECURE90": 90
+};
+      
+
+function getReferDiscount(basePrice) {
+  const referInput = document.querySelector('.refer input');
+  const code = referInput && referInput.value.trim().toUpperCase();
+  if (code && REFER_CODES[code]) {
+    // Calculate percentage discount
+    return Math.round(basePrice * REFER_CODES[code] / 100);
+  }
+  return 0;
+}
+      
+function updatePriceSummary() {
+  const plan = getSelectedPlan();
+  const base = getBasePrice(plan);
+  const gst = getGST(base);
+  const cod = getCODCharge();
+  const refer = getReferDiscount(base);
+  let total = base + gst + cod - refer;
+  if (total < 0) total = 0;
+
+  // Yeh 2 lines add karo:
+  document.getElementById('selectedPlanName').textContent = plan;
+  document.getElementById('basePrice').textContent = `₹${base}`;
+
+  // Niche price-summary ke liye:
+  document.querySelector('#priceSummary #basePrice').textContent = `₹${base}`;
+  document.getElementById('gstPrice').textContent = `₹${gst}`;
+  document.getElementById('codPrice').textContent = `₹${cod}`;
+  document.getElementById('referDiscount').textContent = `-₹${refer}`;
+  document.getElementById('totalPrice').textContent = `₹${total}`;
+}
+      // Update on page load, on refer input, and on COD select
+      document.addEventListener('DOMContentLoaded', () => {
+        updatePriceSummary();
+        document.querySelector('.refer input').addEventListener('input', updatePriceSummary);
+        document.querySelectorAll('input[type=radio][name=payment]').forEach(radio => {
+          radio.addEventListener('change', updatePriceSummary);
+        });
+      });
+      
+      // Optionally, update plan from localStorage or previous page
+
+    function showOption(id) {
+      const sections = ['upi', 'card', 'banking', 'cod'];
+      sections.forEach(sec => {
+        document.getElementById(sec).style.display = (sec === id) ? 'block' : 'none';
+      });
+    }    function completePayment() {
+      const orderId = localStorage.getItem("orderId");
+      document.querySelector('.btn').disabled = true;
+      document.querySelector('.btn').textContent = "Waiting for Payment...";
+      document.getElementById('confirmPaymentBtn').style.display = "block";
+    
+      let timeLeft = 300; // 5 minutes
+      const footer = document.querySelector('.footer');
+      let timerInterval = setInterval(() => {
+        let min = Math.floor(timeLeft / 60);
+        let sec = timeLeft % 60;
+        footer.innerHTML = `Please complete your payment on your phone.<br>Time left: <b>${min}:${sec.toString().padStart(2, '0')}</b>`;
+        timeLeft--;
+        if (timeLeft < 0) {
+          clearInterval(timerInterval);
+          document.getElementById('confirmPaymentBtn').style.display = "none";
+          fetch('http://localhost:8000/api/update-payment-status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_id: orderId, payment_status: "failed" })
+          })
+          .then(() => {
+            alert("Payment time expired! Please try again.");
+            window.location.reload();
+          });
+        }
+      }, 1000);
+    
+      // Jab user "I have completed payment" dabaye
+      document.getElementById('confirmPaymentBtn').onclick = function() {
+        clearInterval(timerInterval);
+        fetch('http://localhost:8000/api/update-payment-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order_id: orderId, payment_status: "success" })
+        })
+        .then(res => res.json())
+        .then(data => {
+          alert("Payment successful! Status updated.");
+          window.location.href = "home.html";
+        })
+        .catch(() => alert("Failed to update payment status!"));
+      };
+    }
+    showOption('upi');
+  </script>
+</body>
+</html>

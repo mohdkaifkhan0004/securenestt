@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Help & Support | Doorvio</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 2rem;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      margin-top: 2rem;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #222;
+    }
+
+    .faq {
+      margin: 2rem 0;
+    }
+
+    .faq h3 {
+      color: #444;
+      margin-bottom: 0.5rem;
+    }
+
+    .faq p {
+      margin: 0 0 1.2rem 0;
+      color: #555;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    input, textarea {
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      background-color: #0077ff;
+      color: white;
+      padding: 0.8rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005fcc;
+    }
+
+    .footer-links {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+    }
+
+    .footer-links a {
+      margin: 0 0.5rem;
+      color: #0077ff;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🛠 Help & Support</h1>
+
+    <section class="faq">
+      <h2>Frequently Asked Questions</h2>
+      <h3>How do I activate my Doorvio QR code?</h3>
+      <p>Scan the QR using the visitor app or camera. You'll be redirected to the owner's page if activation is complete.</p>
+
+      <h3>I can't scan the QR, what should I do?</h3>
+      <p>Ensure your camera is enabled. Try using a QR scanner app, or contact support with your user ID.</p>
+
+      <h3>How do I get a new QR code?</h3>
+      <p>Login to your account and click “Generate QR” to create a fresh code instantly.</p>
+    </section>
+
+    <section class="contact-form">
+      <h2>Contact Us</h2>
+      <form id="supportForm">
+        <input type="text" name="name" placeholder="Your Name" required />
+        <input type="email" name="email" placeholder="Your Email" required />
+        <textarea name="message" rows="5" placeholder="How can we help you?" required></textarea>
+        <button type="submit">Send Message</button>
+      </form>
+    </section>
+
+    <div class="footer-links">
+      <a href="/privacy.html">Privacy Policy</a> |
+      <a href="/terms.html">Terms of Service</a> |
+      <a href="/index.html">Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+  document.getElementById('supportForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const message = form.message.value.trim();
+
+    const response = await fetch("http://127.0.0.1:8000/send-support-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ name, email, message })
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      alert("✅ Thank you! Your message has been sent.");
+      form.reset();
+    } else {
+      alert("❌ Failed to send message: " + result.detail);
+    }
+  });
+</script>
+
+</body>
+</html>

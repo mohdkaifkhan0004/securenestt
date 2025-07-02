@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Visitor Call</title>
+</head>
+<body style="margin: 0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(to bottom right, #fdfbfb, #ebedee); height: 100vh; display: flex; align-items: center; justify-content: center;">
+
+  <div style="width: 90%; max-width: 400px; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;">
+
+    <!-- ✅ Name Input Section -->
+    <div id="nameSection">
+      <h2 style="color: #262626; margin-bottom: 20px;">SecureNestt Call</h2>
+      <label for="visitorName" style="display: block; margin-bottom: 8px; font-weight: 500;">Enter Your Name:</label>
+      <input type="text" id="visitorName" placeholder="e.g. Kaif Khan"
+        style="width: 90%; padding: 12px; border: 1px solid #ccc; border-radius: 12px; font-size: 1rem; margin-bottom: 15px;" />
+      <button id="callBtn"
+        style="width: 100%; padding: 12px; font-size: 1rem; font-weight: bold; color: white; background: linear-gradient(to right, #833ab4, #fd1d1d, #fcb045); border: none; border-radius: 12px; cursor: pointer;">
+        📞 Call User
+      </button>
+      <h3 id="info" style="margin-top: 20px; color: #6b7280;">Waiting...</h3>
+    </div>
+<!-- ✅ Video Call Section (initially hidden) -->
+<div id="videoSection" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: black; overflow: hidden; z-index: 9999;">
+
+  <!-- 📹 Remote Video Fullscreen -->
+  <video id="remoteVideo"
+    autoplay
+    playsinline
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;">
+  </video>
+
+  <!-- 🎥 Local Video Picture-in-Picture -->
+  <video id="localVideo"
+    autoplay
+    muted
+    playsinline
+    style="position: absolute; bottom: 100px; right: 20px; width: 120px; height: 160px; border-radius: 12px; border: 2px solid #fff; z-index: 2; background: black;">
+  </video>
+
+  <!-- 🎛️ Call Controls - Centered at bottom -->
+  <div style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; justify-content: center; gap: 25px; z-index: 3;">
+    <button id="muteBtn"
+      style="width: 55px; height: 55px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 22px; backdrop-filter: blur(6px); cursor: pointer;">🔇</button>
+
+    <button id="cameraBtn"
+      style="width: 55px; height: 55px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 22px; backdrop-filter: blur(6px); cursor: pointer;">🎥</button>
+
+    <button id="endBtn"
+      style="width: 55px; height: 55px; border-radius: 50%; background: #ff4d4f; border: none; color: white; font-size: 22px; font-weight: bold; cursor: pointer;">❌</button>
+  </div>
+
+</div>
+
+
+  </div>
+
+  <script>
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const userId = new URLSearchParams(window.location.search).get('uid');
+      const visitorId = 'visitor-' + Math.random().toString(36).slice(2);
+      const localVideo = document.getElementById('localVideo');
+      const remoteVideo = document.getElementById('remoteVideo');
+      const callBtn = document.getElementById('callBtn');
+      const muteBtn = document.getElementById('muteBtn');
+      const cameraBtn = document.getElementById('cameraBtn');
+      const endBtn = document.getElementById('endBtn');
+      const info = document.getElementById('info');
+
+
+
+
+
+
+      let ws, peerConnection, previewStream;
+      let isMuted = false;
+      let isCameraOff = false;
+let callTimeoutTimer = null;
+      const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+      try {
+        previewStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localVideo.srcObject = previewStream;
+      } catch (err) {
+        alert('Camera/Mic access denied!');
+        return;
+      }
+
+      ws = new WebSocket('ws://127.0.0.1:8000/ws');
+
+      ws.onopen = () => {
+        ws.send(JSON.stringify({ role: 'visitor', visitor_id: visitorId }));
+        info.textContent = '✅ Connected. Ready to call.';
+      };
+
+      ws.onmessage = async (e) => {
+        const data = JSON.parse(e.data);
+        if (data.type === 'answer') {
+           if (callTimeoutTimer) clearTimeout(callTimeoutTimer); // ⛔ clear timeout
+          await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+        }
+        if (data.type === 'ice' && data.candidate) {
+          peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+        }
+        if (data.type === 'end_call') {
+          if (callTimeoutTimer) clearTimeout(callTimeoutTimer); // ⛔ clear timeout
+          alert("Call ended by user.");
+          endCall();
+}
+      };
+
+      callBtn.onclick = () => {
+        const name = document.getElementById('visitorName').value.trim();
+        if (!name) return alert("Enter name first.");
+           const nameInput = document.getElementById("visitorName").value.trim();
+      if (nameInput === "") {
+        alert("Please enter your name");
+        return;
+      }
+      document.getElementById("nameSection").style.display = "none";
+      document.getElementById("videoSection").style.display = "block";
+      document.getElementById("info").textContent = `Calling as ${nameInput}...`;
+
+        navigator.geolocation.getCurrentPosition(
+          (pos) => sendCallRequest(name, {
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude
+          }),
+          () => sendCallRequest(name, null)
+        );
+      };
+
+      function sendCallRequest(name, location) {
+        ws.send(JSON.stringify({
+          type: 'call_request',
+          target_user: userId,
+          from: visitorId,
+          name,
+          timestamp: Date.now(),
+          ...(location && { location })
+        }));
+  // ⏱️ Start timeout: if no answer in 10 sec
+  if (callTimeoutTimer) clearTimeout(callTimeoutTimer);
+  callTimeoutTimer = setTimeout(() => {
+    showToast("❌ User did not answer the call.");
+    ws.send(JSON.stringify({
+      type: 'end_call',
+      target_user: userId
+    }));
+    endCall();
+  }, 10000); // 10 seconds
+
+  startCall();
+}
+      async function startCall() {
+        peerConnection?.close();
+        peerConnection = new RTCPeerConnection(config);
+
+        previewStream.getTracks().forEach(track => peerConnection.addTrack(track, previewStream));
+
+        peerConnection.onicecandidate = (e) => {
+          if (e.candidate) {
+            ws.send(JSON.stringify({
+              type: 'ice',
+              target_user: userId,
+              candidate: e.candidate
+            }));
+          }
+        };
+
+        peerConnection.ontrack = (e) => {
+          remoteVideo.srcObject = e.streams[0];
+        };
+
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+
+        ws.send(JSON.stringify({
+          type: 'offer',
+          offer,
+          target_user: userId,
+          from: visitorId
+        }));
+
+        info.textContent = "📞 Calling...";
+      }
+
+      muteBtn.onclick = () => {
+        isMuted = !isMuted;
+        previewStream.getAudioTracks().forEach(track => track.enabled = !isMuted);
+        muteBtn.textContent = isMuted ? "🔊 Unmute" : "🔇 Mute";
+      };
+
+      cameraBtn.onclick = () => {
+        isCameraOff = !isCameraOff;
+        previewStream.getVideoTracks().forEach(track => track.enabled = !isCameraOff);
+        cameraBtn.textContent = isCameraOff ? "📷 Camera On" : "🎥 Camera Off";
+      };
+
+      endBtn.onclick = () => {
+        ws.send(JSON.stringify({
+          type: 'end_call',
+          target_user: userId
+        }));
+        endCall();
+      };
+
+function endCall() {
+  peerConnection?.close();
+  peerConnection = null;
+  remoteVideo.srcObject = null;
+  info.textContent = "❌ Call Ended.";
+
+  // 🔄 Reload the page
+  setTimeout(() => {
+    location.reload();
+  }, 1000); // wait 1 sec to show "Call Ended." text
+}
+
+      
+    });
+
+
+  </script>
+</body>
+</html>

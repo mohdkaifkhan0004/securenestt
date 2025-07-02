@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureNestt Premium Cards</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1e1e1e, #2e2e2e);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h2 {
+      margin-bottom: 30px;
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    .carousel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .flip-card {
+      background-color: transparent;
+      width: 300px;
+      height: 400px;
+      perspective: 1200px;
+    }
+
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+      border-radius: 20px;
+    }
+
+    .flipped {
+      transform: rotateY(180deg);
+    }
+
+    .flip-card-front, .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .flip-card-front {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+    }
+
+    .flip-card-front img.brand-logo {
+      width: 80px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    .flip-card-front img.qr-logo {
+      
+      height: 240px;
+ 
+    }
+
+    .flip-card-back {
+      background-color: white;
+      color:black;
+      transform: rotateY(180deg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .flip-card-back h3 {
+      margin: 10px 0;
+    }
+
+    .flip-card-back button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      border: 0.5px solid #333;
+      border-radius: 5px;
+      background-color: white;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .white .flip-card-front {
+      background:white
+    }
+    .black .flip-card-front {
+      background: white
+    }
+    .gold .flip-card-front {
+      background:white
+    }
+
+    @media (max-width: 768px) {
+      .flip-card {
+        width: 90vw;
+        height: 400px;
+      }
+    }
+
+    #formModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      padding: 10px;
+    }
+    #formModal form {
+      background: #fff;
+      color: #000;
+      padding: 20px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 80%;
+      height: 80%;
+      overflow-y: auto;
+      max-width: 400px;
+      font-size: 1rem;
+    }
+    #formModal input, #formModal textarea, #formModal select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    #formModal button {
+      background: #333;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h2>Premium SecureNestt Cards</h2>
+  <div class="carousel">
+    <div class="flip-card white" onclick="flip(this)">
+      <div class="flip-card-inner">
+       <div class="flip-card-front">
+  <div class="brand-logo" style="font-weight:bold; font-size:1.2rem; color:black; margin-top: 15px;">SecureNestt</div>
+<img src="assest/SecureNestt.png" alt="QR Code" class="qr-logo">
+  <p style="font-size: 0.85rem; color: black; margin-top: 20px;">SCAN QR CODE TO CALL OWNER</p>
+  <p style="margin-top:auto; font-size: 0.8rem; color: #333;">Powered by SecureNestt — India's #1 Smart Entry Tech</p>
+</div>
+
+        <div class="flip-card-back">
+          <h3>White Plan</h3>
+          <p>💰 Price: ₹49</p>
+          <p>🎯 Lifetime Validity</p>
+          <p>✅ Basic Features</p>
+          <button onclick="openForm('White Plan')">Buy Now</button>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card black" onclick="flip(this)">
+      <div class="flip-card-inner">
+<div class="flip-card-front">
+  <div class="brand-logo" style="font-weight:bold; font-size:1.2rem; color:black;margin-top: 15px;">SecureNestt</div>
+<img src="assest/SecureNestt1.png" alt="QR Code" class="qr-logo">
+  <p style="font-size: 0.85rem; color: black; margin-top: 20px;">SCAN QR CODE TO CALL OWNER</p>
+  <p style="margin-top:auto; font-size: 0.8rem; color: black;">Powered by SecureNestt — India's #1 Smart Entry Tech</p>
+</div>
+
+        <div class="flip-card-back">
+          <h3>Black Plan</h3>
+          <p>💰 Price: ₹99/one-time</p>
+          <p>🚀 Fast Support</p>
+          <p>🛡️ Secure Visitor Log</p>
+          <button onclick="openForm('Black Plan')">Buy Now</button>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card gold" onclick="flip(this)">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+  <div class="brand-logo" style="font-weight:bold; font-size:1.2rem; color:black;margin-top: 15px;">SecureNestt</div>
+<img src="assest/SecureNestt2.png" alt="QR Code" class="qr-logo">
+  <p style="font-size: 0.85rem; color: black; margin-top: 20px;">SCAN QR CODE TO CALL OWNER</p>
+  <p style="margin-top:auto; font-size: 0.8rem; color: black;">Powered by SecureNestt — India's #1 Smart Entry Tech</p>
+</div>
+
+        <div class="flip-card-back">
+          <h3>Gold Plan</h3>
+          <p>💰 Price: ₹199 one-time</p>
+          <p>🔐 Lifetime Premium Access</p>
+          <p>🎁 Free Updates + Support</p>
+          <button onclick="openForm('Gold Plan')">Buy Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="formModal">
+    <form onsubmit="submitForm(event)">
+      <h3>Delivery Details</h3>
+      <input type="text" id="fullName" placeholder="Full Name" required />
+      <input type="text" id="gender" placeholder="Gender" required />
+      <input type="number" id="age" placeholder="Age" required />
+      <input type="tel" id="phone" placeholder="Phone Number" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="text" id="flat" placeholder="Flat, House no., Building" required />
+      <input type="text" id="street" placeholder="Street name, Locality" required />
+      <input type="text" id="landmark" placeholder="Landmark (Nearby Place)" required />
+      <input type="text" id="city" placeholder="City" required />
+      <input type="text" id="state" placeholder="State" required />
+      <input type="text" id="pincode" placeholder="Pincode" required />
+      <input type="hidden" id="planType" />
+      <button type="submit">Submit</button>
+      <button type="button" onclick="closeForm()">Cancel</button>
+    </form>
+  </div>
+<footer style="margin-top: 40px; width: 100%; padding: 20px 10px; background-color: #111; color: #aaa; font-size: 0.85rem; text-align: center; border-top: 1px solid #444;">
+  <p>&copy; 2025 SecureNestt Technologies. All rights reserved.</p>
+  <p>For support, email us at <a href="mailto:support@SecureNest.com" style="color: #f0c040; text-decoration: none;">support@SecureNest.com</a></p>
+</footer>
+  <script>
+    function flip(card) {
+      const inner = card.querySelector('.flip-card-inner');
+      inner.classList.toggle('flipped');
+    }
+
+    function openForm(plan) {
+      event.stopPropagation();
+      document.getElementById('formModal').style.display = 'flex';
+      document.getElementById('planType').value = plan;
+    }
+
+    function closeForm() {
+      document.getElementById('formModal').style.display = 'none';
+    }
+function getPlanPrice(plan) {
+  if (plan === "White Plan") return "49";
+  if (plan === "Black Plan") return "₹99/one-time";
+  if (plan === "Gold Plan") return "₹199 one-time";
+  return "";
+}
+
+function submitForm(event) {
+  event.preventDefault();
+  const details = {
+    name: document.getElementById('fullName').value,
+    gender: document.getElementById('gender').value,
+    age: document.getElementById('age').value,
+    phone: document.getElementById('phone').value,
+    email: document.getElementById('email').value,
+    flat: document.getElementById('flat').value,
+    street: document.getElementById('street').value,
+    landmark: document.getElementById('landmark').value,
+    city: document.getElementById('city').value,
+    state: document.getElementById('state').value,
+    pincode: document.getElementById('pincode').value,
+    plan: document.getElementById('planType').value,
+    price: getPlanPrice(document.getElementById('planType').value),
+    payment_status: "pending"
+  };
+  fetch('http://localhost:8000/api/buy-card', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(details)
+  })
+  .then(res => res.json())
+  .then(data => {
+    localStorage.setItem("orderId", data.order_id);
+    localStorage.setItem("selectedPlan", details.plan);
+    localStorage.setItem("selectedPrice", details.price);
+    window.location.href = "card-payment.html";
+  })
+  .catch(() => alert("Order failed!"));
+}
+  </script>
+</body>
+</html>

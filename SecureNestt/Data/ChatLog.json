@@ -1,0 +1,26 @@
+[
+    {
+        "role": "user",
+        "content": "hii"
+    },
+    {
+        "role": "user",
+        "content": "use this real-time information if needed:\ntoday is Sunday, 29 of June, 2025, the time is 13:39:18.\n"
+    },
+    {
+        "role": "assistant",
+        "content": "Hello!"
+    },
+    {
+        "role": "user",
+        "content": "kaise ho"
+    },
+    {
+        "role": "user",
+        "content": "use this real-time information if needed:\ntoday is Sunday, 29 of June, 2025, the time is 13:39:26.\n"
+    },
+    {
+        "role": "assistant",
+        "content": "I'm doing well, thanks!"
+    }
+]

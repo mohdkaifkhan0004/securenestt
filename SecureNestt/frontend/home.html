@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SecureNestt</title>
+  <link rel="icon" type="image/png" href="/path/to/your/logo.png" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <!-- ...style block as in your file... -->
+    <style>
+/* Global */
+/* --- Custom Animated Cursor --- */
+body, button, .action, .bottom-nav > div {
+  cursor: url('https://cdn.jsdelivr.net/gh/saadeghi/files@main/cursor/cursor3.cur'), pointer !important;
+}
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #F7F8FA;
+  color: #232946;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  background: linear-gradient(90deg, #cbc0f4 60%, #9af0e1 100%);
+  color: #232946;
+    position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Top Section */
+.top-section {
+  padding: 30px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #E0E7FF 0%, #F7F8FA 100%);
+}
+
+#user-name {
+  font-weight: 500;
+  font-size: 1rem;
+  margin: 5px 0;
+}
+
+#house-number {
+  font-size: 1.3rem;
+  color: #6C47FF;
+}
+
+#address-display {
+  color: #6C47FF;
+  font-size: 0.95rem;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  border-radius: 25px 25px 0px 0px;
+  width: 100%;
+  background:linear-gradient(90deg, #cbc0f4 60%, #9af0e1 100%);
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  z-index: 2222;
+}
+
+.bottom-nav > div {
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: inline-block;
+  padding: 10px 15px;
+ color: #232946;
+  text-align: center;
+}
+
+/* Settings Menu */
+.settings-menu {
+  position: fixed;
+  top: -3px;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(108,71,255,0.10);
+  padding: 10px 0;
+  display: none;
+  flex-direction: column;
+  z-index: 1111;
+  height: 100%;
+}
+
+.settings-menu.show {
+  display: flex;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  font-weight: bold;
+  border-bottom: 1px solid #eee;
+  color: #6C47FF;
+}
+
+.settings-menu > div {
+  padding: 10px 16px;
+  cursor: pointer;
+  color: #232946;
+}
+
+.settings-menu > div:hover {
+  background: #E0E7FF;
+  color: #6C47FF;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(108,71,255,0.10);
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+.modal-overlay.show {
+  display: flex;
+  z-index: 3333;
+}
+
+/* Modal Box */
+.modal-box {
+  background: #fff;
+  padding: 25px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 24px rgba(108,71,255,0.10);
+}
+
+.modal-box h2 {
+  margin-top: 0;
+  color: #6C47FF;
+}
+
+.modal-box label {
+  margin-top: 10px;
+  display: block;
+  font-size: 0.9rem;
+  color: #232946;
+}
+
+.modal-box input,
+.modal-box select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #E0E7FF;
+  background: #F7F8FA;
+  color: #232946;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-buttons button {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #6C47FF;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.modal-buttons button:hover {
+  background: #4B2ED5;
+}
+
+/* QR Container */
+.qr-container {
+  background: linear-gradient(135deg, #E0E7FF 0%, #F7F8FA 100%);
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.action {
+  cursor: pointer;
+  background: linear-gradient(90deg, #cbc0f4 60%, #9af0e1 100%);
+  margin: 5px;
+  padding: 20px 20px;
+  display: inline-block;
+  border-radius: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  transition: background 0.3s;
+  color: #232946;
+  box-shadow: 0 2px 8px rgba(0,201,167,0.08);
+}
+
+.action:hover {
+  background:linear-gradient(90deg, #cbc0f4 60%, #9af0e1 100%);
+  color: #fff;
+}
+
+@media (max-width: 400px) {
+  .action {
+    width: 16%;
+    font-size: 10px;
+  }
+  #user-name {
+    font-size: 0.8rem;
+  }
+  #house-number {
+    font-size: 1rem;
+  }
+  .header {
+    font-size: 1.2rem;
+  }
+}
+
+/* QR Modal */
+#qrModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 25px;
+  border-radius: 16px;
+  display: none;
+  z-index: 3333;
+  box-shadow: 0 0 20px rgba(108,71,255,0.15);
+  text-align: center;
+}
+#qrCapture {
+  padding: 25px;
+}
+
+#qrModal span#closeModal {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #6C47FF;
+}
+
+#modal-qr {
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.li {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.li button {
+  padding: 10px;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  border: none;
+  background: #00C9A7;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.li button:hover {
+  background: #6C47FF;
+}
+
+@media (min-width: 600px) {
+  .li {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .li button {
+    flex: 1;
+    max-width: 150px;
+  }
+}
+
+/* Call Logs Section Styling */
+#callLogsSection {
+  max-width: 400px;
+  margin: 24px auto 0;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(108,71,255,0.10);
+  padding: 18px 18px 8px 18px;
+  display: none;
+  transition: box-shadow 0.2s;
+}
+
+#callLogsSection h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1.15rem;
+  color: #6C47FF;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+#callLogsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#callLogsList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0 8px 0;
+  border-bottom: 1px solid #E0E7FF;
+  font-size: 0.98rem;
+  gap: 8px;
+}
+
+#callLogsList li:last-child {
+  border-bottom: none;
+}
+
+#callLogsList b {
+  font-weight: 500;
+  color: #232946;
+}
+
+#callLogsList a {
+  color: #00C9A7;
+  text-decoration: underline dotted;
+  font-size: 0.95em;
+}
+
+#callLogsList .delete-log-btn {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 10px;
+  font-size: 0.95em;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background 0.2s;
+}
+
+#callLogsList .delete-log-btn:hover {
+  background: #c0392b;
+}
+
+@media (max-width: 500px) {
+  #callLogsSection {
+    max-width: 98vw;
+    padding: 10px 4vw 4px 4vw;
+  }
+  #callLogsList li {
+    font-size: 0.92rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+}
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(44,62,80,0.18);
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+.modal-overlay.show {
+  display: flex;
+  z-index: 3333;
+}
+
+
+</style>
+
+</head>
+<body>
+
+  <!-- brand logo -->
+  <div class="header">
+    <span>SecureNestt</span>
+    <span class="dark-toggle" title="Toggle Dark Mode" aria-label="Toggle Dark Mode" role="button" tabindex="0">🌓</span>
+  </div>
+<!-- display user information -->
+  <div class="top-section">
+    <p id="user-name"></p>
+    <h2 id="house-number"></h2>
+    <p id="address-display"></p> 
+ 
+  </div>
+
+
+  <!-- User Form Modal in fill house number and flat name -->
+  <div id="userFormModal" class="modal-overlay">
+    <div class="modal-box">
+      <h2>Fill Your Details</h2>
+      <label for="type">Type</label>
+      <select id="type">
+        <option value="">Select Type</option>
+        <option>House/Villa</option>
+        <option>Flat</option>
+        <option>Hotel</option>
+        <option>Vehicle</option>
+        <option>Lost/Found</option>
+        <option>Other</option>
+      </select>
+      <label for="houseNum">House Number</label>
+      <input type="text" id="houseNum" placeholder="Enter house number" />
+      <label for="fullAddress">Full Address</label>
+      <input type="text" id="fullAddress" placeholder="Enter full address" />
+      <label for="emergencyNum">Emergency Number</label>
+      <input type="tel" id="emergencyNum" placeholder="Enter emergency number" />
+      <div class="modal-buttons">
+        <button id="closeUserFormBtn">Cancel</button>
+        <button id="saveDetails">Save</button>
+      </div>
+    </div>
+  </div>
+
+  
+<!--  Feature new app here  -->
+<div class="qr-container">
+<!-- Download QR Kit Button -->
+<div class="action" id="download-qr">Download QR Kit</div>
+<div class="action" id="heySiriBtn"role="button"onclick="window.location.href = 'http://127.0.0.1:5500/frontend/heySiri/index.html'">HeySiri</div>
+<div class="action" id=""role="button"onclick="window.location.href = 'http://127.0.0.1:5500/frontend/card-section.html'">Premium card</div>
+
+<div class="action"  id="nav-discover" title="Discover" role="button" tabindex="0" >Offers </div>
+<div class="action" id="heySiriBtn"role="button"onclick="window.location.href = 'http://127.0.0.1:5500/frontend/help/help.html'">Help</div>
+</div>  
+<!-- QR Code Modal -->
+<div id="qrModal" style="display: none;">
+  <!-- Content to download/print/share -->
+  <div id="qrCapture" class="qr_print" >
+    <h2>SecureNestt</h2>
+    <span id="closeModal">X</span>
+    <h2 id="modal-house-number"></h2>
+    <div id="modal-qr"></div> <!-- QR Code will be injected here -->
+    <h4>SCAN QR CODE TO CALL OWNER</h4>
+  </div>
+
+  <!-- Action Buttons -->
+   
+  <button id="downloadQRBtn" style="cursor: pointer;
+    background: #3498db;
+  
+    border: none;
+    padding: 5px 7px;
+    display: inline-block;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;">Download QR</button>
+  <button id="copyURLBtn"style="cursor: pointer;
+    background: #3498db;
+ 
+    border: none;
+    padding: 5px 7px;
+    display: inline-block;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;">Copy URL</button>
+  <button id="shareQRBtn"style="cursor: pointer;
+    background: #3498db;
+
+    border: none;
+    padding: 5px 7px;
+    display: inline-block;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;">Share QR</button>
+  <button id="printQRBtn"style="cursor: pointer;
+    background: #3498db;
+  
+    border: none;
+    padding: 5px 7px;
+    display: inline-block;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;">Print QR</button>
+</div>
+
+
+
+<!-- call logs section  -->
+<div id="callLogsSection" class="modal-box" style="max-width:400px;margin:20px auto 0;display:none; margin-bottom: 10%;">
+  <h3>📜 Call History</h3>
+  <ul id="callLogsList" style="list-style:none;padding:0;margin:0;"></ul>
+</div>
+
+        <div id="incomingCallModal" class="modal-overlay">
+      <div class="modal-box" style="max-width:340px;text-align:center; background:linear-gradient(135deg,#e0e7ff 0%,#f7f8fa 100%); box-shadow:0 8px 32px rgba(0,0,0,0.18); border-radius:22px; padding:32px 18px 28px 18px;">
+        <div id="callPrompt" style="display:flex; flex-direction:column; align-items:center;">
+          <div style="width:82px; height:82px; border-radius:50%; background:#fff; box-shadow:0 2px 8px #b3b3b3; margin-bottom:18px; display:flex; align-items:center; justify-content:center;">
+            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Caller" style="width:70px; height:70px; border-radius:50%;">
+          </div>
+          <div style="font-size:1.25rem; font-weight:600; color:#232946; margin-bottom:2px;">Incoming Video Call</div>
+          <div style="font-size:1.05rem; color:#6C47FF; margin-bottom:8px;">
+            <span id="callerName"></span>
+            <div id="status"></div>          </div>
+          <div id="visitorLocation" style="font-size:0.95em;color:#555; margin-bottom:18px;"></div>
+          <div style="display:flex; justify-content:center; gap:38px; margin-top:10px;">
+            <button id="acceptBtn" style="background:#25d366; border:none; width:54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; color:#fff; box-shadow:0 2px 8px #b3b3b3; cursor:pointer;">
+              <span style="font-size:2rem;">&#128222;</span>
+            </button>
+            <button id="rejectBtn" style="background:#e74c3c; border:none; width:54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; color:#fff; box-shadow:0 2px 8px #b3b3b3; cursor:pointer;">
+              <span style="font-size:2rem;">&#10060;</span>
+            </button>
+          </div>
+        </div>
+<div id="videoCallModalUI" style="
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  max-width: 360px;
+  width: 90%;
+  margin: auto;
+  margin-top: 28px;
+  position: relative;
+  z-index: 10;
+">
+
+  <!-- Remote Video -->
+  <video id="remoteVideo" autoplay playsinline style="
+    width: 100%;
+    max-width: 320px;
+    height: 180px;
+    background: #000;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  "></video>
+
+  <!-- Local Video (small floating) -->
+  <video id="localVideo" autoplay muted playsinline style="
+    width: 90px;
+    height: 70px;
+    background: #000;
+    border-radius: 12px;
+    position: absolute;
+    bottom: 85px;
+    right: 3px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.4);
+  "></video>
+
+  <!-- Controls -->
+  <div style="
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    margin-top: 18px;
+  ">
+    <button id="muteBtn" style="
+      background: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 54px;
+      height: 54px;
+      font-size: 1.5rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    ">🔇</button>
+
+    <button id="cameraBtn" style="
+      background: #f1c40f;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 54px;
+      height: 54px;
+      font-size: 1.5rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    ">📷</button>
+
+    <button id="modalEndCallBtn" style="
+      background: #e74c3c;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 54px;
+      height: 54px;
+      font-size: 2rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    ">❌</button>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+
+    
+<!-- footer section  -->
+<div class="bottom-nav">
+<!-- automatically home page per aarha hai  -->
+<div id="nav-home" title="Home" role="button" tabindex="0" onclick="location.href='/frontend/home.html'">🏠 </div>
+<!-- New Hey Siri Button -->
+<div id="heySiriBtn" title="Hey Siri" role="button" tabindex="0" onclick="window.location.href = 'http://127.0.0.1:5500/frontend/heySiri/index.html'">🗣️  </div>
+<!-- <div id="heySiriBtn" title="Hey Siri" role="button" tabindex="0" onclick="window.location.href = 'http://127.0.0.1:5500/frontend/pay/index.html'">🗣️  </div> -->
+
+<!-- find some offer here -->
+    <div id="settingsBtn" title="Settings" role="button" tabindex="0">⚙️ </div>
+</div>
+<!-- setting function here are pending -->
+<div class="settings-menu" id="settingsMenu">
+<div class="settings-header">
+<span>Settings</span>
+<button id="closeSettings" title="Close" aria-label="Close Settings">✖</button>
+</div>
+<div id="toggleDark">Toggle Dark Mode</div>
+<div id="editUserInfo">Edit User Info</div>
+<div id="changePass">Change Password</div>
+</div>
+
+
+
+
+<script> 
+
+// --- GLOBALS ---
+
+
+  let localStream;
+  let isMuted = false;
+  let isCameraOff = false;
+let backendUserId = null;
+let ws;
+let lastOffer = null;
+let peerConnection;
+let roomId;
+const config = {
+  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+};
+
+// --- DOMContentLoaded: SIRF EK HI BLOCK RAKHO ---
+document.addEventListener('DOMContentLoaded', async () => {
+  // --- DOM ELEMENTS ---
+  const modal = document.getElementById('userFormModal');
+  const houseNumberElem = document.getElementById('house-number');
+  const userNameElem = document.getElementById('user-name');
+  const addressElem = document.getElementById('address-display');
+  const saveBtn = document.getElementById('saveDetails');
+  const cancelBtn = document.getElementById('closeUserFormBtn');
+  const editUserInfoBtn = document.getElementById('editUserInfo');
+  const settingsBtn = document.getElementById('settingsBtn');
+  const settingsMenu = document.getElementById('settingsMenu');
+  const darkToggle = document.getElementById('toggleDark');
+  const changePass = document.getElementById('changePass');
+  const downloadBtn = document.getElementById('download-qr');
+  const modalElem = document.getElementById('qrModal');
+  const closeModalBtn = document.getElementById('closeModal');
+  const modalUserId = document.getElementById('modal-user-id');
+  const modalQRContainer = document.getElementById('modal-qr');
+  const downloadQRBtn = document.getElementById('downloadQRBtn');
+  const copyURLBtn = document.getElementById('copyURLBtn');
+  const shareQRBtn = document.getElementById('shareQRBtn');
+  const printQRBtn = document.getElementById('printQRBtn');
+  const statusEl = document.getElementById('status');
+  const localVideo = document.getElementById('localVideo');
+  const remoteVideo = document.getElementById('remoteVideo');
+  const callerNameEl = document.getElementById('callerName');
+  const incomingCallModal = document.getElementById('incomingCallModal');  const acceptBtn = document.getElementById('acceptBtn');
+  const rejectBtn = document.getElementById('rejectBtn');
+  const token = localStorage.getItem('doorviToken');
+  const currentUser = localStorage.getItem('doorviCurrentUser');
+  const visitorLocationEl = document.getElementById('visitorLocation');
+  const muteBtn = document.getElementById('muteBtn');
+  const cameraBtn = document.getElementById('cameraBtn');
+
+  console.log("callerNameEl:", callerNameEl);
+  console.log("visitorLocationEl:", visitorLocationEl);
+
+//  try {
+//     previewStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+//     localVideo.srcObject = previewStream;
+//     // Optionally: localVideo.play();
+//     console.log("Camera always ON for preview");
+//   } catch (err) {
+//     alert("Camera/Mic access denied or not available!");
+//     console.error("getUserMedia error:", err);
+//   }
+  // --- LOGIN CHECK ---
+  if (!token || !currentUser) {
+    alert('Please login first!');
+    window.location.href = "index.html";
+    return;
+  }
+
+  // --- FETCH USER INFO ---
+  async function fetchUserInfo() {
+    try {
+      const res = await fetch('http://localhost:8000/userinfo', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (!res.ok) {
+        alert("Session expired. Please login again.");
+        window.location.href = "index.html";
+        return;
+      }
+      const data = await res.json();
+      backendUserId = data.user_id;
+      displayUserInfo({
+        type: data.type || "Flat",
+        houseNum: data.flat_number,
+        fullAddress: data.full_address,
+        emergencyNum: data.emergency_number || "",
+        user_id: data.user_id
+      });
+      setupQRCode(data.user_id);
+      return data;
+    } catch (err) {
+      alert("Error fetching user info");
+      window.location.href = "index.html";
+    }
+  }
+
+  // --- DISPLAY USER INFO ---
+  function displayUserInfo(data) {
+    if (!data) return;
+    houseNumberElem.textContent = `${data.type} - ${data.houseNum}`;
+    addressElem.textContent = `${data.fullAddress} | Emergency: ${data.emergencyNum || 'N/A'}`;
+    userNameElem.textContent = `ID: ${data.user_id || 'Unknown'}`;
+  }
+
+  // --- QR CODE LOGIC (unchanged, as in your code) ---
+  function setupQRCode(userId) {
+    // ...existing QR code logic...
+  }
+
+  // --- SAVE USER INFO ---
+  async function saveUserInfo() {
+    const type = document.getElementById('type').value.trim();
+    const houseNum = document.getElementById('houseNum').value.trim();
+    const fullAddress = document.getElementById('fullAddress').value.trim();
+    const emergencyNum = document.getElementById('emergencyNum').value.trim();
+    if (!type || !houseNum || !fullAddress) {
+      alert('Please fill all fields!');
+      return;
+    }
+    try {
+      const res = await fetch('http://localhost:8000/submit-info', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          email: currentUser,
+          username: "User",
+          flat_number: houseNum,
+          full_address: fullAddress,
+          emergency_number: emergencyNum
+        })
+      });
+      if (!res.ok) throw new Error('Failed to save info');
+      await fetchUserInfo();
+      closeModal();
+      alert('Details saved successfully!');
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+    function getCallLogsKey() {
+    // backendUserId har user ke liye unique hai
+    return 'doorviCallLogs_' + (backendUserId || 'default');
+  }
+  
+  function saveCallLog(log) {
+    let logs = JSON.parse(localStorage.getItem(getCallLogsKey()) || '[]');
+    logs.unshift(log);
+    localStorage.setItem(getCallLogsKey(), JSON.stringify(logs));
+  }
+  
+  function removeCallLog(time) {
+    let logs = JSON.parse(localStorage.getItem(getCallLogsKey()) || '[]');
+    logs = logs.filter(l => l.time !== time);
+    localStorage.setItem(getCallLogsKey(), JSON.stringify(logs));
+  }
+
+    function addCallLog({ name, location, time, accepted }, skipSave = false) {
+      const callLogsList = document.getElementById('callLogsList');
+      const li = document.createElement('li');
+      li.style.padding = "8px 0";
+      li.style.borderBottom = "1px solid #eee";
+      let locStr = "";
+      if (location && location.lat && location.lon) {
+        locStr = ` | <a href="https://maps.google.com/?q=${location.lat},${location.lon}" target="_blank" style="color:#3498db;">Location</a>`;
+      }
+      li.innerHTML = `
+        <b>${name || "Unknown Visitor"}</b>
+        <span style="color:#888;font-size:0.9em;">(${new Date(time).toLocaleString()})</span>
+        ${locStr}
+        <span style="float:right;color:${accepted ? "#27ae60" : "#e74c3c"};margin-left:10px;">${accepted ? "Accepted" : "Rejected"}</span>
+        <button class="delete-log-btn" style="float:right;margin-left:10px;background:#e74c3c;color:white;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;">Delete</button>
+      `;
+      li.querySelector('.delete-log-btn').onclick = () => {
+        li.remove();
+        removeCallLog(time);
+        // Section ko kabhi hide mat karo!
+      };
+      callLogsList.prepend(li);
+      document.getElementById('callLogsSection').style.display = 'block';
+      if (!skipSave) saveCallLog({ name, location, time, accepted });
+    }
+
+        function restoreCallLogs() {
+      let logs = JSON.parse(localStorage.getItem(getCallLogsKey()) || '[]');
+      logs.reverse().forEach(log => addCallLog(log, true));
+      // Section ko kabhi hide mat karo!
+      document.getElementById('callLogsSection').style.display = 'block';
+    }
+
+
+
+
+
+
+
+
+
+
+  // --- MODAL HELPERS ---
+  function openModal(prefill = null) {
+    document.getElementById('type').value = prefill?.type || "";
+    document.getElementById('houseNum').value = prefill?.houseNum || "";
+    document.getElementById('fullAddress').value = prefill?.fullAddress || "";
+    document.getElementById('emergencyNum').value = prefill?.emergencyNum || "";
+    modal.classList.add('show');
+  }
+  function closeModal() {
+    modal.classList.remove('show');
+  }
+
+  // --- WEBSOCKET LOGIC ---
+  async function startWebSocket() {
+    ws = new WebSocket('ws://127.0.0.1:8000/ws');
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ role: 'user', user_id: backendUserId }));
+      console.log('✅ WebSocket connected, user_id:', backendUserId);
+    };
+    ws.onerror = err => {
+      console.error("❌ WebSocket error:", err);
+    };
+    ws.onclose = () => {
+      console.log("⚠️ WebSocket closed");
+      statusEl.textContent = "Disconnected from server";
+    };
+    ws.onmessage = async (event) => {
+      const data = JSON.parse(event.data);
+      console.log("📩 Message from server:", data);
+        if (data.type === 'end_call') {
+    peerConnection?.close();
+    document.getElementById('videoCallModalUI').style.display = 'none';
+    document.getElementById('callPrompt').style.display = 'flex';
+    statusEl.textContent = "❌ Call ended by visitor";
+  }
+  if (data.type === 'call_request') {
+  window.lastVisitorId = data.from;
+  roomId = data.room;
+  if (callerNameEl) callerNameEl.textContent = data.name || "Unknown Visitor";
+  if (data.location && data.location.lat && data.location.lon) {
+    const lat = data.location.lat, lon = data.location.lon;
+    if (visitorLocationEl) {
+      visitorLocationEl.innerHTML = `Location: <a href="https://maps.google.com/?q=${lat},${lon}" target="_blank">${lat.toFixed(5)}, ${lon.toFixed(5)}</a>`;
+    }
+    window.lastVisitorLocation = { lat, lon };
+  } else {
+    if (visitorLocationEl) visitorLocationEl.textContent = '';
+    window.lastVisitorLocation = null;
+  }
+  incomingCallModal.classList.add('show');
+  acceptBtn.disabled = true; // Disable accept until offer arrives
+  if (statusEl) statusEl.textContent = "Connecting...";
+
+  // --- Auto reject timeout --- 
+if (window.callTimeoutTimer) clearTimeout(window.callTimeoutTimer);
+window.callTimeoutTimer = setTimeout(() => {
+  if (!lastOffer) {
+    console.log("❌ No offer received, auto rejecting call.");
+    incomingCallModal.classList.remove('show');
+    statusEl.textContent = "❌ Call missed (No offer)";
+    ws.send(JSON.stringify({
+      type: 'call_response',
+      accepted: false,
+      target_user: backendUserId,
+      room: roomId
+    }));
+    addCallLog({
+      name: callerNameEl.textContent,
+      location: window.lastVisitorLocation || null,
+      time: Date.now(),
+      accepted: false
+    });
+  }
+}, 10000); // 10 seconds
+
+}
+      // ...inside ws.onmessage...
+// ...inside ws.onmessage...
+if (data.type === 'offer') {
+  if (window.callTimeoutTimer) clearTimeout(window.callTimeoutTimer); // Clear timeout
+  lastOffer = data.offer;
+  console.log("Offer received", lastOffer);
+  acceptBtn.disabled = false;
+  if (statusEl) statusEl.textContent = "Ready to accept call";
+}
+      if (data.type === 'ice' && data.candidate) {
+        if (peerConnection) {
+          peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+        }
+      }
+    };
+// Accept button handler:
+acceptBtn.onclick = () => {
+  if (window.callTimeoutTimer) clearTimeout(window.callTimeoutTimer);
+
+  console.log("Accept clicked, lastOffer:", lastOffer);
+  ws.send(JSON.stringify({
+    type: 'call_response',
+    accepted: true,
+    target_user: backendUserId,
+    room: roomId
+  }));
+  addCallLog({
+    name: callerNameEl ? callerNameEl.textContent : "",
+    location: window.lastVisitorLocation || null,
+    time: Date.now(),
+    accepted: true
+  });
+  document.getElementById('callPrompt').style.display = 'none';
+  document.getElementById('videoCallModalUI').style.display = 'flex';
+  statusEl.textContent = "✅ Call accepted";
+  if (lastOffer) {
+    startUserCall(lastOffer);
+  } else {
+    alert("No offer received yet!");
+  }
+};
+    rejectBtn.onclick = () => {
+      if (window.callTimeoutTimer) clearTimeout(window.callTimeoutTimer);
+      ws.send(JSON.stringify({
+        type: 'call_response',
+        accepted: false,
+        target_user: backendUserId,
+        room: roomId
+      }));
+      addCallLog({
+        name: callerNameEl.textContent,
+        location: window.lastVisitorLocation || null,
+        time: Date.now(),
+        accepted: false
+      });
+      incomingCallModal.classList.remove('show');
+      statusEl.textContent = "❌ Call rejected";
+    };
+
+muteBtn.onclick = () => {
+  if (!stream) {
+    console.warn("No stream available!");
+    return;
+  }
+  isMuted = !isMuted;
+  stream.getAudioTracks().forEach((track, i) => {
+    track.enabled = !isMuted;
+    console.log(`Track ${i} enabled:`, track.enabled);
+  });
+  muteBtn.textContent = isMuted ? '🔈' : '🔇';
+};
+cameraBtn.onclick = () => {
+  if (!stream) {
+    console.warn("No stream available!");
+    return;
+  }
+  isCameraOff = !isCameraOff;
+  stream.getVideoTracks().forEach((track, i) => {
+    track.enabled = !isCameraOff;
+    console.log(`Track ${i} enabled:`, track.enabled);
+  });
+  cameraBtn.textContent = isCameraOff ? '📷' : '📸';
+};
+    
+
+async function startUserCall(offer) {
+
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    console.log("📷 Got local stream:", stream);
+    localVideo.srcObject = stream;
+    localVideo.muted = true;
+    localVideo.playsInline = true;
+    await localVideo.play();
+  } catch (err) {
+    alert("Camera/Mic access denied or not available!");
+    console.error("getUserMedia error:", err);
+    return;
+  }
+  peerConnection = new RTCPeerConnection(config);
+  stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+  peerConnection.onicecandidate = e => {
+    if (e.candidate) {
+      ws.send(JSON.stringify({
+        type: 'ice',
+        target_user: window.lastVisitorId,
+        candidate: e.candidate
+      }));
+    }
+  };
+  peerConnection.ontrack = e => {
+    console.log("🎥 Got remote stream:", e.streams[0]);
+    remoteVideo.srcObject = e.streams[0];
+  };
+  await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+  const answer = await peerConnection.createAnswer();
+  await peerConnection.setLocalDescription(answer);
+  ws.send(JSON.stringify({
+    type: 'answer',
+    answer: answer,
+    target_user: window.lastVisitorId
+  }));
+}
+
+  }
+
+
+  
+  // --- INIT FLOW ---
+  const userData = await fetchUserInfo();
+  if (!userData || !userData.flat_number || userData.flat_number === "N/A") {
+    openModal();
+  }
+  // WebSocket ko tabhi open karo jab backendUserId mil chuka ho!
+  if (backendUserId) {
+    await startWebSocket();
+    restoreCallLogs();
+  } else {
+    alert("User ID not found, please login again.");
+    window.location.href = "index.html";
+  }
+  // --- EVENT LISTENERS ---
+    // DOMContentLoaded ke andar, event listeners section me:
+  downloadBtn.onclick = () => {
+    modalElem.style.display = 'block';
+    // Modal me house number set karo
+    document.getElementById('modal-house-number').textContent = houseNumberElem.textContent;
+    // QR code generate karo (agar zarurat ho)
+    modalQRContainer.innerHTML = '';
+    new QRCode(modalQRContainer, {
+   text: backendUserId ? `http://127.0.0.1:5500/frontend/visitor.html?uid=${backendUserId}` : "No User",
+       width: 200,
+      height: 200
+    });
+  };
+
+    // QR Modal close logic
+    closeModalBtn.onclick = () => {
+      modalElem.style.display = 'none';
+      modalQRContainer.innerHTML = '';
+    };
+    // Modal ke bahar click karne par bhi band ho
+    window.addEventListener('click', (e) => {
+      if (e.target === modalElem) {
+        modalElem.style.display = 'none';
+        modalQRContainer.innerHTML = '';
+      }
+    });
+  
+  // Download QR as image
+  downloadQRBtn.onclick = () => {
+    const qrDiv = document.getElementById('qrCapture');
+    html2canvas(qrDiv).then(canvas => {
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = `qr_code_${backendUserId}.png`;
+      link.click();
+    }).catch(err => {
+      alert('Failed to generate image!');
+    });
+  };
+    // ...existing code...
+  
+  // Copy URL to clipboard
+  copyURLBtn.onclick = async () => {
+    const url = backendUserId ? `http://127.0.0.1:5500/frontend/visitor.html?uid=${backendUserId}` : "";
+    try {
+      await navigator.clipboard.writeText(url);
+      alert('URL copied to clipboard!');
+    } catch (err) {
+      alert('Copy failed!');
+    }
+  };
+  
+  // Share QR code (if supported)
+  shareQRBtn.onclick = async () => {
+    const img = modalQRContainer.querySelector('img');
+    const url = backendUserId ? `http://127.0.0.1:5500/frontend/visitor.html?uid=${backendUserId}` : "";
+    if (navigator.share && img) {
+      const response = await fetch(img.src);
+      const blob = await response.blob();
+      const file = new File([blob], 'qr.png', { type: 'image/png' });
+      try {
+        await navigator.share({
+          title: 'QR Code',
+          text: 'Scan this QR to call',
+          url: url,
+          files: [file]
+        });
+      } catch (err) {
+        alert('Sharing failed or canceled.');
+      }
+    } else {
+      alert('Sharing not supported on this device.');
+    }
+  };
+  // Print QR code
+  printQRBtn.onclick = () => {
+    const img = modalQRContainer.querySelector('img');
+    if (img) {
+      const printWindow = window.open('', '', 'width=400,height=400');
+      printWindow.document.write(`<img src="${img.src}" style="width:200px; height:200px;">`);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    }
+  };
+  saveBtn.onclick = saveUserInfo;
+  cancelBtn.onclick = closeModal;
+  editUserInfoBtn.onclick = async () => {
+    const data = await fetchUserInfo();
+    openModal({
+      type: data.type || "Flat",
+      houseNum: data.flat_number,
+      fullAddress: data.full_address,
+      emergencyNum: data.emergency_number || ""
+    });
+    if (settingsMenu) settingsMenu.classList.remove('show');
+  };
+  settingsBtn.onclick = () => {
+    settingsMenu.classList.toggle('show');
+  };
+  changePass.onclick = () => {
+    alert('Password change feature coming soon!');
+    settingsMenu.classList.remove('show');
+  };
+  document.addEventListener('click', (e) => {
+    if (!settingsMenu.contains(e.target) && e.target !== settingsBtn) {
+      settingsMenu.classList.remove('show');
+    }
+  });
+
+    // --- EVENT LISTENERS ---
+  // ...existing event listeners...
+  
+  // Call End button (modalEndCallBtn) ka event listener:
+  document.getElementById('modalEndCallBtn').onclick = () => {
+    if (peerConnection) peerConnection.close();
+    document.getElementById('incomingCallModal').classList.remove('show');
+    document.getElementById('callPrompt').style.display = 'flex';
+    document.getElementById('videoCallModalUI').style.display = 'none';
+    // Visitor ko end message bhejo:
+    ws.send(JSON.stringify({
+      type: 'end_call',
+      target_user: window.lastVisitorId // Yeh visitorId call_request receive hone par set hota hai
+    }));
+  };
+});
+
+
+
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
