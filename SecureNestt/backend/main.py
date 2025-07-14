@@ -6,10 +6,10 @@ import asyncio
 import json
 
 import time
-from backend.siri.Model import FirstLayerDMM
-from backend.siri.Chatbot import ChatBot
-from backend.siri.RealtimeSearchEngine import realtimesearch
-from backend.siri.Automation import translateandexecute
+# from backend.siri.Model import FirstLayerDMM
+# from backend.siri.Chatbot import ChatBot
+# from backend.siri.RealtimeSearchEngine import realtimesearch
+# from backend.siri.Automation import translateandexecute
 # doorkeyz 
 
 from backend.routes import support
@@ -53,13 +53,16 @@ from fastapi.responses import JSONResponse
 from fastapi import FastAPI, Request, Query
 from motor.motor_asyncio import AsyncIOMotorClient
 
+import os
 
 
 from fastapi import FastAPI
 # App setup
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
+frontend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
+app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 
 
 # CORS
@@ -460,87 +463,87 @@ async def websocket_endpoint(websocket: WebSocket):
             del active_connections[visitor_id]
 
             
-CHAT_HISTORY_FILE = "chat_history.json"
+# CHAT_HISTORY_FILE = "chat_history.json"
 
-# Ensure history file exists
-if not os.path.exists(CHAT_HISTORY_FILE):
-    with open(CHAT_HISTORY_FILE, "w") as f:
-        json.dump([], f)
+# # Ensure history file exists
+# if not os.path.exists(CHAT_HISTORY_FILE):
+#     with open(CHAT_HISTORY_FILE, "w") as f:
+#         json.dump([], f)
 
-class UserRequest(BaseModel):
-    message: str
+# class UserRequest(BaseModel):
+#     message: str
 
-async def save_history(history):
-    with open(CHAT_HISTORY_FILE, "w") as file:
-        json.dump(history, file)
+# async def save_history(history):
+#     with open(CHAT_HISTORY_FILE, "w") as file:
+#         json.dump(history, file)
 
-# Core response handler
-async def handle_user_input(user_input):
-    try:
-        classification = FirstLayerDMM(user_input)
-        print(f"[Classification] {classification}")
-        if not classification:
-            return "Sorry, I couldn't understand that."
+# # Core response handler
+# async def handle_user_input(user_input):
+#     try:
+#         classification = FirstLayerDMM(user_input)
+#         print(f"[Classification] {classification}")
+#         if not classification:
+#             return "Sorry, I couldn't understand that."
 
-        first_tag = classification[0]
+#         first_tag = classification[0]
 
-        if first_tag.startswith("general"):
-            response = await asyncio.to_thread(ChatBot, user_input)
-            return response or "No relevant response found."
+#         if first_tag.startswith("general"):
+#             response = await asyncio.to_thread(ChatBot, user_input)
+#             return response or "No relevant response found."
 
-        elif first_tag.startswith("realtime"):
-            response = await asyncio.to_thread(realtimesearch, user_input)
-            return response
+#         elif first_tag.startswith("realtime"):
+#             response = await asyncio.to_thread(realtimesearch, user_input)
+#             return response
 
-        else:
-            response = ""
-            async for res in translateandexecute([user_input]):
-                response += f"{res}\n"
-            return response.strip()
+#         else:
+#             response = ""
+#             async for res in translateandexecute([user_input]):
+#                 response += f"{res}\n"
+#             return response.strip()
 
-    except Exception as e:
-        return f"Error: {str(e)}"
+#     except Exception as e:
+#         return f"Error: {str(e)}"
 
-@app.post("/chat")
-async def chat_endpoint(user_request: UserRequest):
-    user_input = user_request.message
-    print(f"[Request Received] {user_input}")
-    start = time.time()
+# @app.post("/chat")
+# async def chat_endpoint(user_request: UserRequest):
+#     user_input = user_request.message
+#     print(f"[Request Received] {user_input}")
+#     start = time.time()
 
-    result = await handle_user_input(user_input)
+#     result = await handle_user_input(user_input)
 
-    duration = time.time() - start
-    print(f"[Response Time] {duration:.2f} seconds")
+#     duration = time.time() - start
+#     print(f"[Response Time] {duration:.2f} seconds")
 
-    # Load chat history
-    try:
-        with open(CHAT_HISTORY_FILE, "r") as file:
-            chat_history = json.load(file)
-    except (json.JSONDecodeError, FileNotFoundError):
-        chat_history = []
+#     # Load chat history
+#     try:
+#         with open(CHAT_HISTORY_FILE, "r") as file:
+#             chat_history = json.load(file)
+#     except (json.JSONDecodeError, FileNotFoundError):
+#         chat_history = []
 
-    chat_history.append({"user": True, "text": user_input})
-    chat_history.append({"user": False, "text": result})
+#     chat_history.append({"user": True, "text": user_input})
+#     chat_history.append({"user": False, "text": result})
 
-    # Save chat history without blocking response
-    asyncio.create_task(save_history(chat_history))
+#     # Save chat history without blocking response
+#     asyncio.create_task(save_history(chat_history))
 
-    return {"response": result}
+#     return {"response": result}
 
-@app.get("/get_chat_history")
-async def get_chat_history():
-    try:
-        with open(CHAT_HISTORY_FILE, "r") as file:
-            chat_history = json.load(file)
-    except (json.JSONDecodeError, FileNotFoundError):
-        chat_history = []
-    return {"chat_history": chat_history}
+# @app.get("/get_chat_history")
+# async def get_chat_history():
+#     try:
+#         with open(CHAT_HISTORY_FILE, "r") as file:
+#             chat_history = json.load(file)
+#     except (json.JSONDecodeError, FileNotFoundError):
+#         chat_history = []
+#     return {"chat_history": chat_history}
 
-@app.post("/clear_chat_history")
-async def clear_chat_history():
-    if os.path.exists(CHAT_HISTORY_FILE):
-        os.remove(CHAT_HISTORY_FILE)
-    return {"status": "Chat history cleared"}
+# @app.post("/clear_chat_history")
+# async def clear_chat_history():
+#     if os.path.exists(CHAT_HISTORY_FILE):
+#         os.remove(CHAT_HISTORY_FILE)
+#     return {"status": "Chat history cleared"}
 
 
 
