@@ -12,7 +12,7 @@ import requests
 import asyncio
 
 # Load environment variables
-env_vars = dotenv_values(".env")
+env_vars = dotenv_values("backend/.env")
 GroqAPIKey = env_vars.get("GroqAPIKey")
 
 # Set up Groq client

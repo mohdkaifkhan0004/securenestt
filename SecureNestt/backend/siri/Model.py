@@ -3,7 +3,7 @@ from rich import print
 from dotenv import dotenv_values
 import os
 
-env_vars = dotenv_values(".env")
+env_vars = dotenv_values("backend/.env")
 cohereApiKey = env_vars.get("CohereApiKey")
 
 co = cohere.Client(api_key=cohereApiKey)

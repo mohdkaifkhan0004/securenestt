@@ -5,7 +5,7 @@ import datetime
 import time
 from dotenv import dotenv_values
 
-env_vars = dotenv_values(".env")
+env_vars = dotenv_values("backend/.env")
 
 # Load environment variables
 username = env_vars.get("username")

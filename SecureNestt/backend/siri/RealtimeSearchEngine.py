@@ -8,7 +8,7 @@ import time
 
 
 # Load environment variables
-env_vars = dotenv_values(".env")
+env_vars = dotenv_values("backend/.env")
 username = env_vars.get("username")
 Assistant = env_vars.get("Assistantname")
 GroqAPIKey = env_vars.get("GroqAPIKey")
